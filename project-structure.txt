@@ -1,0 +1,377 @@
+Folder PATH listing
+Volume serial number is 000000F4 78F2:8A51
+C:\USERS\CC\DESKTOP\ECO-CLEAN\APP
+|   favicon.ico
+|   globals.css
+|   layout.js
+|   
++---(auth)
+|   |   layout.js
+|   |   
+|   +---forgot-password
+|   |       page.js
+|   |       
+|   +---login
+|   |       page.js
+|   |       
+|   +---register
+|   |       page.js
+|   |       
+|   \---reset-password
+|           page.js
+|           
++---(public)
+|   |   layout.js
+|   |   page.js
+|   |   
+|   +---about
+|   |       page.js
+|   |       
+|   +---campaigns
+|   |       page.js
+|   |       
+|   +---complaints
+|   |       page.js
+|   |       
+|   +---contact
+|   |       page.js
+|   |       
+|   +---privacy
+|   |       page.js
+|   |       
+|   +---report-garbage
+|   |       page.js
+|   |       
+|   +---rewards
+|   |   |   page.js
+|   |   |   
+|   |   \---[id]
+|   |           page.js
+|   |           
+|   +---schedule
+|   |       page.js
+|   |       
+|   +---services
+|   |   |   page.js
+|   |   |   
+|   |   \---[slug]
+|   |           page.js
+|   |           
+|   +---terms
+|   |       page.js
+|   |       
+|   \---waste-segregation
+|           page.js
+|           
++---admin
+|   +---(auth)
+|   |   |   layout.js
+|   |   |   
+|   |   +---forgot-password
+|   |   |       page.js
+|   |   |       
+|   |   \---login
+|   |           page.js
+|   |           
+|   \---(panel)
+|       |   layout.js
+|       |   page.js
+|       |   
+|       +---admin-staff
+|       |       page.js
+|       |       
+|       +---analytics
+|       |       page.js
+|       |       
+|       +---announcements
+|       |       page.js
+|       |       
+|       +---assignments
+|       |       page.js
+|       |       
+|       +---audit-logs
+|       |       page.js
+|       |       
+|       +---backup
+|       |       page.js
+|       |       
+|       +---banners
+|       |       page.js
+|       |       
+|       +---campaigns
+|       |       page.js
+|       |       
+|       +---collectors
+|       |       page.js
+|       |       
+|       +---complaints
+|       |       page.js
+|       |       
+|       +---contact-messages
+|       |       page.js
+|       |       
+|       +---content
+|       |       page.js
+|       |       
+|       +---exports
+|       |       page.js
+|       |       
+|       +---faqs
+|       |       page.js
+|       |       
+|       +---green-points
+|       |       page.js
+|       |       
+|       +---households
+|       |       page.js
+|       |       
+|       +---integrations
+|       |       page.js
+|       |       
+|       +---inventory
+|       |       page.js
+|       |       
+|       +---media
+|       |       page.js
+|       |       
+|       +---missed-pickups
+|       |       page.js
+|       |       
+|       +---neighborhoods
+|       |       page.js
+|       |       
+|       +---notifications
+|       |       page.js
+|       |       
+|       +---operations-map
+|       |       page.js
+|       |       
+|       +---orders
+|       |       page.js
+|       |       
+|       +---pages
+|       |       page.js
+|       |       
+|       +---points-rules
+|       |       page.js
+|       |       
+|       +---reports
+|       |       page.js
+|       |       
+|       +---rewards
+|       |       page.js
+|       |       
+|       +---roles
+|       |       page.js
+|       |       
+|       +---routes
+|       |       page.js
+|       |       
+|       +---schedules
+|       |       page.js
+|       |       
+|       +---security
+|       |       page.js
+|       |       
+|       +---security-center
+|       |       page.js
+|       |       
+|       +---services
+|       |       page.js
+|       |       
+|       +---settings
+|       |       page.js
+|       |       
+|       +---support
+|       |       page.js
+|       |       
+|       +---users
+|       |       page.js
+|       |       
+|       +---vehicles
+|       |       page.js
+|       |       
+|       +---vendors
+|       |       page.js
+|       |       
+|       \---zones
+|               page.js
+|               
++---api
+|   +---auth
+|   |   \---[...nextauth]
+|   |           route.js
+|   |           
+|   \---db-health
+|           route.js
+|           
++---business
+|   |   layout.js
+|   |   page.js
+|   |   
+|   +---collections
+|   |       page.js
+|   |       
+|   +---dashboard
+|   |       page.js
+|   |       
+|   +---invoices
+|   |       page.js
+|   |       
+|   +---locations
+|   |       page.js
+|   |       
+|   \---reports
+|           page.js
+|           
++---collector
+|   |   layout.js
+|   |   page.js
+|   |   
+|   +---history
+|   |       page.js
+|   |       
+|   +---jobs
+|   |   |   page.js
+|   |   |   
+|   |   \---[id]
+|   |           page.js
+|   |           
+|   +---notifications
+|   |       page.js
+|   |       
+|   +---profile
+|   |       page.js
+|   |       
+|   \---schedule
+|           page.js
+|           
+\---dashboard
+    |   layout.js
+    |   page.js
+    |   
+    +---collections
+    |       page.js
+    |       
+    +---complaints
+    |   |   page.js
+    |   |   
+    |   \---[id]
+    |           page.js
+    |           
+    +---green-points
+    |       page.js
+    |       
+    +---household
+    |       page.js
+    |       
+    +---notifications
+    |       page.js
+    |       
+    +---orders
+    |       page.js
+    |       
+    +---profile
+    |       page.js
+    |       
+    +---reports
+    |   |   page.js
+    |   |   
+    |   \---[id]
+    |           page.js
+    |           
+    +---rewards
+    |       page.js
+    |       
+    \---settings
+            page.js
+            
+Folder PATH listing
+Volume serial number is 000000AD 78F2:8A51
+C:\USERS\CC\DESKTOP\ECO-CLEAN\LIB
+|   navigation.js
+|   
++---analytics
++---audit
++---auth
+|       guards.js
+|       session.js
+|       
++---collections
++---content
+|       wasteBags.js
+|       
++---db
+|       connect.js
+|       
++---notifications
++---permissions
+|       roles.js
+|       
++---points
++---rewards
++---security
++---storage
+\---validation
+Folder PATH listing
+Volume serial number is 00000061 78F2:8A51
+C:\USERS\CC\DESKTOP\ECO-CLEAN\MODELS
+    AuditLog.js
+    ServiceZone.js
+    User.js
+    WasteCategory.js
+    
+No subfolders exist 
+
+Folder PATH listing
+Volume serial number is 00000038 78F2:8A51
+C:\USERS\CC\DESKTOP\ECO-CLEAN\COMPONENTS
++---admin
++---charts
++---collector
++---dashboard
++---dialogs
++---forms
+|       AdminLoginForm.js
+|       LoginForm.js
+|       LogoutButton.js
+|       RegisterForm.js
+|       
++---layout
+|       AuthShell.js
+|       Footer.js
+|       PortalShell.js
+|       PublicNavbar.js
+|       
++---maps
++---resident
++---tables
+\---ui
+        PlaceholderPage.js
+        
+Folder PATH listing
+Volume serial number is 0000008F 78F2:8A51
+C:\USERS\CC\DESKTOP\ECO-CLEAN\SCRIPTS
+    create-auth-files.js
+    create-core-files.js
+    create-website-files.js
+    
+No subfolders exist 
+
+Folder PATH listing
+Volume serial number is 0000008D 78F2:8A51
+C:\USERS\CC\DESKTOP\ECO-CLEAN\TESTS
++---e2e
++---integration
+\---unit
+Folder PATH listing
+Volume serial number is 00000071 78F2:8A51
+C:\USERS\CC\DESKTOP\ECO-CLEAN\PUBLIC
+    file.svg
+    globe.svg
+    next.svg
+    vercel.svg
+    window.svg
+    
+No subfolders exist 
+
