@@ -10,12 +10,17 @@ export default async function LoginPage({ searchParams }) {
       <h1 className="mb-6 text-2xl font-bold text-emerald-900">ECO-CLEAN Login</h1>
       {params?.registered && (
         <p role="status" className="mb-4 rounded-md border border-emerald-300 bg-emerald-50 p-3 text-sm text-emerald-900">
-          Account ban gaya. Ab login karein.
+          Account created. Please log in.
+        </p>
+      )}
+      {params?.changed && (
+        <p role="status" className="mb-4 rounded-md border border-emerald-300 bg-emerald-50 p-3 text-sm text-emerald-900">
+          Your password was changed. Please log in with the new password.
         </p>
       )}
       <LoginForm />
       <p className="mt-4 text-sm">
-        Naya account? <Link href="/register" className="font-semibold text-emerald-800 underline">Register</Link>
+        New here? <Link href="/register" className="font-semibold text-emerald-800 underline">Register</Link>
       </p>
     </main>
   );
