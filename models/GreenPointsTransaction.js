@@ -8,6 +8,7 @@ const transactionSchema = new mongoose.Schema(
     points: { type: Number, required: true },
     balanceAfter: { type: Number, required: true },
     relatedReport: { type: mongoose.Schema.Types.ObjectId, ref: "WasteReport", index: true },
+    relatedOrder: { type: mongoose.Schema.Types.ObjectId, ref: "RewardOrder", index: true },
     verificationStatus: { type: String, enum: ["VERIFIED"], default: "VERIFIED" },
     reason: { type: String, required: true, maxlength: 300 },
     authorizedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
