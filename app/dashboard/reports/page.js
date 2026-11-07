@@ -5,6 +5,9 @@ import "@/models/WasteCategory";
 import "@/models/ServiceZone";
 import { requireRole } from "@/lib/auth/guards";
 import { STATUS_LABELS, formatDateTime } from "@/lib/reportStatus";
+import StatusBadge from "@/components/ui/StatusBadge";
+import EmptyState from "@/components/ui/EmptyState";
+import ErrorNotice from "@/components/ui/ErrorNotice";
 
 export const metadata = { title: "My Reports | ECO-CLEAN" };
 export const dynamic = "force-dynamic";
@@ -16,6 +19,7 @@ export default async function MyReportsPage() {
   let loadError = false;
   try {
     await connectDB();
+    // Always the signed-in resident's own reports: the id comes from the server session.
     reports = await WasteReport.find({ reporter: user.id, deletedAt: null })
       .sort({ createdAt: -1 })
       .limit(50)
@@ -37,15 +41,14 @@ export default async function MyReportsPage() {
       </div>
 
       {loadError && (
-        <p role="alert" className="mt-4 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-800">
-          Reports could not be loaded. Please try again later.
-        </p>
+        <div className="mt-4">
+          <ErrorNotice>Reports could not be loaded. Please try again later.</ErrorNotice>
+        </div>
       )}
-
       {!loadError && reports.length === 0 && (
-        <p className="mt-4 rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700">
-          You have not submitted any reports yet.
-        </p>
+        <div className="mt-4">
+          <EmptyState>You have not submitted any reports yet.</EmptyState>
+        </div>
       )}
 
       {reports.length > 0 && (
@@ -70,7 +73,9 @@ export default async function MyReportsPage() {
                   </td>
                   <td className="py-2 pr-4">{r.category ? r.category.name : "-"}</td>
                   <td className="py-2 pr-4">{r.serviceZone ? r.serviceZone.name : "-"}</td>
-                  <td className="py-2 pr-4">{STATUS_LABELS[r.status] || r.status}</td>
+                  <td className="py-2 pr-4">
+                    <StatusBadge status={r.status} label={STATUS_LABELS[r.status]} />
+                  </td>
                   <td className="py-2">{formatDateTime(r.createdAt)}</td>
                 </tr>
               ))}

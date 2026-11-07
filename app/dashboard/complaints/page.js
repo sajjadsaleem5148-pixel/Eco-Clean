@@ -4,6 +4,9 @@ import Complaint from "@/models/Complaint";
 import { requireRole } from "@/lib/auth/guards";
 import { formatDateTime } from "@/lib/reportStatus";
 import { COMPLAINT_STATUS_LABELS, COMPLAINT_CATEGORIES } from "@/lib/complaintStatus";
+import StatusBadge from "@/components/ui/StatusBadge";
+import EmptyState from "@/components/ui/EmptyState";
+import ErrorNotice from "@/components/ui/ErrorNotice";
 
 export const metadata = { title: "My Complaints | ECO-CLEAN" };
 export const dynamic = "force-dynamic";
@@ -15,7 +18,7 @@ export default async function MyComplaintsPage() {
   let loadError = false;
   try {
     await connectDB();
-    // Hamesha apni complaints: reporter server ke session se aata hai.
+    // Always the signed-in resident's own complaints: the id comes from the server session.
     complaints = await Complaint.find({ reporter: user.id, deletedAt: null })
       .sort({ createdAt: -1 })
       .limit(50)
@@ -36,14 +39,14 @@ export default async function MyComplaintsPage() {
       </div>
 
       {loadError && (
-        <p role="alert" className="mt-4 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-800">
-          Complaints could not be loaded. Please try again later.
-        </p>
+        <div className="mt-4">
+          <ErrorNotice>Complaints could not be loaded. Please try again later.</ErrorNotice>
+        </div>
       )}
       {!loadError && complaints.length === 0 && (
-        <p className="mt-4 rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700">
-          You have not submitted any complaints yet.
-        </p>
+        <div className="mt-4">
+          <EmptyState>You have not submitted any complaints yet.</EmptyState>
+        </div>
       )}
 
       {complaints.length > 0 && (
@@ -66,7 +69,9 @@ export default async function MyComplaintsPage() {
                     </Link>
                   </td>
                   <td className="py-2 pr-4">{COMPLAINT_CATEGORIES[c.category] || c.category}</td>
-                  <td className="py-2 pr-4">{COMPLAINT_STATUS_LABELS[c.status] || c.status}</td>
+                  <td className="py-2 pr-4">
+                    <StatusBadge status={c.status} label={COMPLAINT_STATUS_LABELS[c.status]} />
+                  </td>
                   <td className="py-2">{formatDateTime(c.createdAt)}</td>
                 </tr>
               ))}

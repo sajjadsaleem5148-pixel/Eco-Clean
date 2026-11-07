@@ -5,6 +5,11 @@ import "@/models/User";
 import { requirePermission } from "@/lib/auth/guards";
 import { formatDateTime } from "@/lib/reportStatus";
 import { ORDER_STATUSES, ORDER_STATUS_LABELS } from "@/lib/rewardStatus";
+import StatusBadge from "@/components/ui/StatusBadge";
+import EmptyState from "@/components/ui/EmptyState";
+import ErrorNotice from "@/components/ui/ErrorNotice";
+import FilterTabs from "@/components/tables/FilterTabs";
+import Pagination from "@/components/tables/Pagination";
 
 export const metadata = { title: "Redemption Orders | ECO-CLEAN" };
 export const dynamic = "force-dynamic";
@@ -49,32 +54,28 @@ export default async function AdminOrdersPage({ searchParams }) {
   }
 
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const tabs = [{ label: "All", href: href(1, null), active: !status }].concat(
+    ORDER_STATUSES.map((s) => ({ label: ORDER_STATUS_LABELS[s], href: href(1, s), active: status === s }))
+  );
 
   return (
     <section className="rounded-lg border border-gray-200 bg-white p-5">
       <h1 className="text-2xl font-bold text-gray-900">Redemption Orders</h1>
       <p className="mt-1 text-sm text-gray-600">Total: {total}</p>
 
-      <nav aria-label="Status filter" className="mt-4 flex flex-wrap gap-2 text-sm">
-        <Link href={href(1, null)} className={"rounded-md border px-3 py-2 " + (!status ? "border-emerald-700 bg-emerald-50 font-semibold" : "border-gray-300")}>
-          All
-        </Link>
-        {ORDER_STATUSES.map((s) => (
-          <Link key={s} href={href(1, s)} className={"rounded-md border px-3 py-2 " + (status === s ? "border-emerald-700 bg-emerald-50 font-semibold" : "border-gray-300")}>
-            {ORDER_STATUS_LABELS[s]}
-          </Link>
-        ))}
-      </nav>
+      <div className="mt-4">
+        <FilterTabs label="Status filter" items={tabs} />
+      </div>
 
       {loadError && (
-        <p role="alert" className="mt-4 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-800">
-          Orders could not be loaded. The database may be unavailable.
-        </p>
+        <div className="mt-4">
+          <ErrorNotice>Orders could not be loaded. The database may be unavailable.</ErrorNotice>
+        </div>
       )}
       {!loadError && orders.length === 0 && (
-        <p className="mt-4 rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700">
-          No orders match this filter.
-        </p>
+        <div className="mt-4">
+          <EmptyState>No orders match this filter.</EmptyState>
+        </div>
       )}
 
       {orders.length > 0 && (
@@ -101,7 +102,9 @@ export default async function AdminOrdersPage({ searchParams }) {
                   <td className="py-2 pr-4">{o.productName}</td>
                   <td className="py-2 pr-4">{o.user ? o.user.name : "-"}</td>
                   <td className="py-2 pr-4">{o.pointsCost}</td>
-                  <td className="py-2 pr-4">{ORDER_STATUS_LABELS[o.status] || o.status}</td>
+                  <td className="py-2 pr-4">
+                    <StatusBadge status={o.status} label={ORDER_STATUS_LABELS[o.status]} />
+                  </td>
                   <td className="py-2">{formatDateTime(o.createdAt)}</td>
                 </tr>
               ))}
@@ -110,17 +113,7 @@ export default async function AdminOrdersPage({ searchParams }) {
         </div>
       )}
 
-      {pages > 1 && (
-        <div className="mt-4 flex items-center justify-between text-sm">
-          {page > 1 ? (
-            <Link href={href(page - 1, status)} className="font-semibold text-emerald-800 underline">Previous</Link>
-          ) : <span />}
-          <span>Page {page} of {pages}</span>
-          {page < pages ? (
-            <Link href={href(page + 1, status)} className="font-semibold text-emerald-800 underline">Next</Link>
-          ) : <span />}
-        </div>
-      )}
+      <Pagination page={page} pages={pages} prevHref={href(page - 1, status)} nextHref={href(page + 1, status)} />
     </section>
   );
 }

@@ -19,7 +19,7 @@ const BLOCKED = [
 ];
 BLOCKED.forEach((op) => {
   auditLogSchema.pre(op, function () {
-    throw new Error("AuditLog append-only hai: " + op + " allowed nahi");
+    throw new Error("AuditLog is append-only: " + op + " is not allowed");
   });
 });
 

@@ -4,6 +4,9 @@ import connectDB from "@/lib/db/connect";
 import { requireRole } from "@/lib/auth/guards";
 import { formatDateTime } from "@/lib/reportStatus";
 import { TYPE_LABELS, formatPoints } from "@/lib/points/labels";
+import StatCard from "@/components/dashboard/StatCard";
+import EmptyState from "@/components/ui/EmptyState";
+import ErrorNotice from "@/components/ui/ErrorNotice";
 
 export const metadata = { title: "Dashboard | ECO-CLEAN" };
 export const dynamic = "force-dynamic";
@@ -34,7 +37,7 @@ export default async function DashboardPage() {
 
   const m = {};
   if (dbOk) {
-    // Hamesha apna data: id server ke session se aati hai, URL se nahi.
+    // Always the signed-in user's own data: the id comes from the server session, never from the URL.
     const me = new mongoose.Types.ObjectId(user.id);
     const [total, awaiting, active, collected, complaints, orders, account, recent] = await Promise.all([
       safe(() => col("wastereports").countDocuments({ reporter: me, deletedAt: null })),
@@ -90,24 +93,16 @@ export default async function DashboardPage() {
           </Link>
         </div>
         {!dbOk && (
-          <p role="alert" className="mt-4 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-800">
-            Your data could not be loaded. Please try again later.
-          </p>
+          <div className="mt-4">
+            <ErrorNotice>Your data could not be loaded. Please try again later.</ErrorNotice>
+          </div>
         )}
       </section>
 
       {dbOk && (
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {cards.map((c) => (
-            <li key={c.label} className="rounded-lg border border-gray-200 bg-white p-5">
-              <p className="text-sm text-gray-600">{c.label}</p>
-              <p className="mt-1 text-3xl font-bold text-emerald-900">
-                {c.value === null || c.value === undefined ? "-" : c.value}
-              </p>
-              <Link href={c.href} className="mt-2 inline-block text-sm font-semibold text-emerald-800 underline">
-                Open
-              </Link>
-            </li>
+            <StatCard key={c.label} label={c.label} value={c.value} href={c.href} />
           ))}
         </ul>
       )}
@@ -116,9 +111,9 @@ export default async function DashboardPage() {
         <section className="rounded-lg border border-gray-200 bg-white p-5">
           <h2 className="text-lg font-semibold">Recent Green Points activity</h2>
           {!m.recent || m.recent.length === 0 ? (
-            <p className="mt-3 rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700">
-              No points activity yet. Points are awarded only after staff verify a collection.
-            </p>
+            <div className="mt-3">
+              <EmptyState>No points activity yet. Points are awarded only after staff verify a collection.</EmptyState>
+            </div>
           ) : (
             <div className="mt-3 overflow-x-auto">
               <table className="w-full min-w-[30rem] text-left text-sm">

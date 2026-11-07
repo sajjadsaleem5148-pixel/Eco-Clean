@@ -5,6 +5,11 @@ import "@/models/User";
 import { requirePermission } from "@/lib/auth/guards";
 import { formatDateTime } from "@/lib/reportStatus";
 import { COMPLAINT_STATUSES, COMPLAINT_STATUS_LABELS, COMPLAINT_CATEGORIES } from "@/lib/complaintStatus";
+import StatusBadge from "@/components/ui/StatusBadge";
+import EmptyState from "@/components/ui/EmptyState";
+import ErrorNotice from "@/components/ui/ErrorNotice";
+import FilterTabs from "@/components/tables/FilterTabs";
+import Pagination from "@/components/tables/Pagination";
 
 export const metadata = { title: "Complaints | ECO-CLEAN" };
 export const dynamic = "force-dynamic";
@@ -26,7 +31,7 @@ export default async function AdminComplaintsPage({ searchParams }) {
   const status = COMPLAINT_STATUSES.includes(sp?.status) ? sp.status : null;
   const page = Math.max(1, parseInt(sp?.page, 10) || 1);
   const rawQ = typeof sp?.q === "string" ? sp.q.trim().toUpperCase() : "";
-  // Sirf letters, numbers aur hyphen allowed, isliye regex mein koi special character nahi ja sakta.
+  // Only letters, numbers and hyphens are allowed, so no regex special characters can get in.
   const q = /^[A-Z0-9-]{1,30}$/.test(rawQ) ? rawQ : "";
 
   const filter = { deletedAt: null };
@@ -54,6 +59,13 @@ export default async function AdminComplaintsPage({ searchParams }) {
   }
 
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const tabs = [{ label: "All", href: href(1, null, q), active: !status }].concat(
+    COMPLAINT_STATUSES.map((s) => ({
+      label: COMPLAINT_STATUS_LABELS[s],
+      href: href(1, s, q),
+      active: status === s,
+    }))
+  );
 
   return (
     <section className="rounded-lg border border-gray-200 bg-white p-5">
@@ -72,26 +84,19 @@ export default async function AdminComplaintsPage({ searchParams }) {
         </button>
       </form>
 
-      <nav aria-label="Status filter" className="mt-4 flex flex-wrap gap-2 text-sm">
-        <Link href={href(1, null, q)} className={"rounded-md border px-3 py-2 " + (!status ? "border-emerald-700 bg-emerald-50 font-semibold" : "border-gray-300")}>
-          All
-        </Link>
-        {COMPLAINT_STATUSES.map((s) => (
-          <Link key={s} href={href(1, s, q)} className={"rounded-md border px-3 py-2 " + (status === s ? "border-emerald-700 bg-emerald-50 font-semibold" : "border-gray-300")}>
-            {COMPLAINT_STATUS_LABELS[s]}
-          </Link>
-        ))}
-      </nav>
+      <div className="mt-4">
+        <FilterTabs label="Status filter" items={tabs} />
+      </div>
 
       {loadError && (
-        <p role="alert" className="mt-4 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-800">
-          Complaints could not be loaded. The database may be unavailable.
-        </p>
+        <div className="mt-4">
+          <ErrorNotice>Complaints could not be loaded. The database may be unavailable.</ErrorNotice>
+        </div>
       )}
       {!loadError && complaints.length === 0 && (
-        <p className="mt-4 rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700">
-          No complaints match this filter.
-        </p>
+        <div className="mt-4">
+          <EmptyState>No complaints match this filter.</EmptyState>
+        </div>
       )}
 
       {complaints.length > 0 && (
@@ -117,7 +122,9 @@ export default async function AdminComplaintsPage({ searchParams }) {
                   </td>
                   <td className="py-2 pr-4">{COMPLAINT_CATEGORIES[c.category] || c.category}</td>
                   <td className="py-2 pr-4">{c.priority}</td>
-                  <td className="py-2 pr-4">{COMPLAINT_STATUS_LABELS[c.status] || c.status}</td>
+                  <td className="py-2 pr-4">
+                    <StatusBadge status={c.status} label={COMPLAINT_STATUS_LABELS[c.status]} />
+                  </td>
                   <td className="py-2 pr-4">{c.assignedTo ? c.assignedTo.name : "Unassigned"}</td>
                   <td className="py-2">{formatDateTime(c.createdAt)}</td>
                 </tr>
@@ -127,17 +134,7 @@ export default async function AdminComplaintsPage({ searchParams }) {
         </div>
       )}
 
-      {pages > 1 && (
-        <div className="mt-4 flex items-center justify-between text-sm">
-          {page > 1 ? (
-            <Link href={href(page - 1, status, q)} className="font-semibold text-emerald-800 underline">Previous</Link>
-          ) : <span />}
-          <span>Page {page} of {pages}</span>
-          {page < pages ? (
-            <Link href={href(page + 1, status, q)} className="font-semibold text-emerald-800 underline">Next</Link>
-          ) : <span />}
-        </div>
-      )}
+      <Pagination page={page} pages={pages} prevHref={href(page - 1, status, q)} nextHref={href(page + 1, status, q)} />
     </section>
   );
 }
