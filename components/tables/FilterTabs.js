@@ -10,8 +10,10 @@ export default function FilterTabs({ label, items }) {
           href={item.href}
           aria-current={item.active ? "page" : undefined}
           className={
-            "rounded-md border px-3 py-2 " +
-            (item.active ? "border-emerald-700 bg-emerald-50 font-semibold" : "border-gray-300")
+            "inline-flex min-h-10 items-center rounded-full border px-4 " +
+            (item.active
+              ? "border-emerald-800 bg-emerald-800 font-semibold text-white"
+              : "border-gray-300 bg-white text-gray-800 hover:bg-gray-100")
           }
         >
           {item.label}

@@ -12,7 +12,8 @@ const STYLES = {
 export default function StatusBadge({ status, label }) {
   const tone = toneFor(status);
   return (
-    <span className={"inline-block rounded border px-2 py-0.5 text-xs font-semibold " + STYLES[tone]}>
+    <span className={"inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold " + STYLES[tone]}>
+      <span aria-hidden="true" className="mr-1.5 inline-block h-2 w-2 rounded-full bg-current" />
       {label || status}
     </span>
   );

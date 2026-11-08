@@ -1,4 +1,3 @@
-import Link from "next/link";
 import connectDB from "@/lib/db/connect";
 import User from "@/models/User";
 import { requirePermission } from "@/lib/auth/guards";
@@ -6,6 +5,11 @@ import { hasPermission } from "@/lib/permissions/roles";
 import { formatDateTime } from "@/lib/reportStatus";
 import { MANAGEABLE_ROLES, USER_STATUSES, ROLE_LABELS, USER_STATUS_LABELS } from "@/lib/userAdmin";
 import { SuspendForm, ReactivateForm } from "@/components/forms/UserForms";
+import StatusBadge from "@/components/ui/StatusBadge";
+import EmptyState from "@/components/ui/EmptyState";
+import ErrorNotice from "@/components/ui/ErrorNotice";
+import FilterTabs from "@/components/tables/FilterTabs";
+import Pagination from "@/components/tables/Pagination";
 
 export const metadata = { title: "Residents and Collectors | ECO-CLEAN" };
 export const dynamic = "force-dynamic";
@@ -34,7 +38,7 @@ export default async function AdminUsersPage({ searchParams }) {
 
   const filter = { deletedAt: null, role: role ? role : { $in: MANAGEABLE_ROLES } };
   if (status) filter.status = status;
-  // Email shuru se match: regex nahi, sirf range query, is liye injection ka khatra nahi.
+  // Email prefix match uses a range query, not a regex, so there is no injection risk.
   if (q) filter.email = { $gte: q, $lt: q + String.fromCharCode(65535) };
 
   let users = [];
@@ -57,6 +61,12 @@ export default async function AdminUsersPage({ searchParams }) {
   }
 
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const roleTabs = [{ label: "All roles", href: href(1, null, status, q), active: !role }].concat(
+    MANAGEABLE_ROLES.map((r) => ({ label: ROLE_LABELS[r], href: href(1, r, status, q), active: role === r }))
+  );
+  const statusTabs = [{ label: "Any status", href: href(1, role, null, q), active: !status }].concat(
+    USER_STATUSES.map((s) => ({ label: USER_STATUS_LABELS[s], href: href(1, role, s, q), active: status === s }))
+  );
 
   return (
     <section className="rounded-lg border border-gray-200 bg-white p-5">
@@ -78,35 +88,20 @@ export default async function AdminUsersPage({ searchParams }) {
         </button>
       </form>
 
-      <nav aria-label="Filters" className="mt-4 flex flex-wrap gap-2 text-sm">
-        <Link href={href(1, null, status, q)} className={"rounded-md border px-3 py-2 " + (!role ? "border-emerald-700 bg-emerald-50 font-semibold" : "border-gray-300")}>
-          All roles
-        </Link>
-        {MANAGEABLE_ROLES.map((r) => (
-          <Link key={r} href={href(1, r, status, q)} className={"rounded-md border px-3 py-2 " + (role === r ? "border-emerald-700 bg-emerald-50 font-semibold" : "border-gray-300")}>
-            {ROLE_LABELS[r]}
-          </Link>
-        ))}
-        <span className="px-2 py-2 text-gray-500">|</span>
-        <Link href={href(1, role, null, q)} className={"rounded-md border px-3 py-2 " + (!status ? "border-emerald-700 bg-emerald-50 font-semibold" : "border-gray-300")}>
-          Any status
-        </Link>
-        {USER_STATUSES.map((s) => (
-          <Link key={s} href={href(1, role, s, q)} className={"rounded-md border px-3 py-2 " + (status === s ? "border-emerald-700 bg-emerald-50 font-semibold" : "border-gray-300")}>
-            {USER_STATUS_LABELS[s]}
-          </Link>
-        ))}
-      </nav>
+      <div className="mt-4 space-y-2">
+        <FilterTabs label="Role filter" items={roleTabs} />
+        <FilterTabs label="Status filter" items={statusTabs} />
+      </div>
 
       {loadError && (
-        <p role="alert" className="mt-4 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-800">
-          Accounts could not be loaded. The database may be unavailable.
-        </p>
+        <div className="mt-4">
+          <ErrorNotice>Accounts could not be loaded. The database may be unavailable.</ErrorNotice>
+        </div>
       )}
       {!loadError && users.length === 0 && (
-        <p className="mt-4 rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700">
-          No accounts match this filter.
-        </p>
+        <div className="mt-4">
+          <EmptyState>No accounts match this filter.</EmptyState>
+        </div>
       )}
 
       {users.length > 0 && (
@@ -131,9 +126,9 @@ export default async function AdminUsersPage({ searchParams }) {
                     <td className="py-2 pr-4">{u.email}</td>
                     <td className="py-2 pr-4">{ROLE_LABELS[u.role] || u.role}</td>
                     <td className="py-2 pr-4">
-                      {USER_STATUS_LABELS[u.status] || u.status}
+                      <StatusBadge status={u.status} label={USER_STATUS_LABELS[u.status]} />
                       {u.status === "SUSPENDED" && u.suspensionReason && (
-                        <span className="block text-xs text-gray-600">Reason: {u.suspensionReason}</span>
+                        <span className="mt-1 block text-xs text-gray-600">Reason: {u.suspensionReason}</span>
                       )}
                     </td>
                     <td className="py-2 pr-4">{formatDateTime(u.createdAt)}</td>
@@ -159,17 +154,7 @@ export default async function AdminUsersPage({ searchParams }) {
         </div>
       )}
 
-      {pages > 1 && (
-        <div className="mt-4 flex items-center justify-between text-sm">
-          {page > 1 ? (
-            <Link href={href(page - 1, role, status, q)} className="font-semibold text-emerald-800 underline">Previous</Link>
-          ) : <span />}
-          <span>Page {page} of {pages}</span>
-          {page < pages ? (
-            <Link href={href(page + 1, role, status, q)} className="font-semibold text-emerald-800 underline">Next</Link>
-          ) : <span />}
-        </div>
-      )}
+      <Pagination page={page} pages={pages} prevHref={href(page - 1, role, status, q)} nextHref={href(page + 1, role, status, q)} />
     </section>
   );
 }

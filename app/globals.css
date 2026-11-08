@@ -1,26 +1,97 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ECO-CLEAN design tokens. Changing a value here restyles every page. */
+@theme {
+  --color-brand: #047857;
+  --color-forest: #064e3b;
+  --color-charcoal: #1d211e;
+  --color-surface: #f7f8f7;
+
+  /* Neutral scale: light gray to charcoal */
+  --color-gray-50: #f7f8f7;
+  --color-gray-100: #eef0ee;
+  --color-gray-200: #dfe3e0;
+  --color-gray-300: #c8cec9;
+  --color-gray-400: #9aa39c;
+  --color-gray-500: #6b756d;
+  --color-gray-600: #4f5852;
+  --color-gray-700: #3b423d;
+  --color-gray-800: #2a302c;
+  --color-gray-900: #1d211e;
+  --color-gray-950: #101311;
+
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  html {
+    color-scheme: light;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    background: #ffffff;
+    color: var(--color-gray-900);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    color: var(--color-gray-900);
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  a {
+    text-underline-offset: 3px;
+  }
+
+  input,
+  select,
+  textarea {
+    background-color: #ffffff;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-gray-500);
+  }
+
+  input:disabled,
+  select:disabled,
+  textarea:disabled {
+    background-color: var(--color-gray-100);
+    cursor: not-allowed;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+
+  thead th {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* Visible keyboard focus everywhere */
+  :focus-visible {
+    outline: 3px solid var(--color-emerald-600);
+    outline-offset: 2px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
 }

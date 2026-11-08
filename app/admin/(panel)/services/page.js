@@ -10,6 +10,9 @@ import {
   contentTargets,
 } from "@/lib/contentStatus";
 import { ServiceForm, ContentStatusButton } from "@/components/forms/ContentForms";
+import StatusBadge from "@/components/ui/StatusBadge";
+import EmptyState from "@/components/ui/EmptyState";
+import ErrorNotice from "@/components/ui/ErrorNotice";
 
 export const metadata = { title: "Services | ECO-CLEAN" };
 export const dynamic = "force-dynamic";
@@ -42,14 +45,14 @@ export default async function AdminServicesPage() {
         </p>
 
         {loadError && (
-          <p role="alert" className="mt-4 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-800">
-            Services could not be loaded. The database may be unavailable.
-          </p>
+          <div className="mt-4">
+            <ErrorNotice>Services could not be loaded. The database may be unavailable.</ErrorNotice>
+          </div>
         )}
         {!loadError && services.length === 0 && (
-          <p className="mt-4 rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700">
-            No services yet. Create the first one below.
-          </p>
+          <div className="mt-4">
+            <EmptyState>No services yet. Create the first one below.</EmptyState>
+          </div>
         )}
 
         {services.length > 0 && (
@@ -71,7 +74,9 @@ export default async function AdminServicesPage() {
                     <td className="py-2 pr-4 font-medium">{s.title}</td>
                     <td className="py-2 pr-4">{SERVICE_CATEGORIES[s.category] || s.category}</td>
                     <td className="py-2 pr-4">{ELIGIBLE_LABELS[s.eligibleCustomer]}</td>
-                    <td className="py-2 pr-4">{CONTENT_STATUS_LABELS[s.status] || s.status}</td>
+                    <td className="py-2 pr-4">
+                      <StatusBadge status={s.status} label={CONTENT_STATUS_LABELS[s.status]} />
+                    </td>
                     <td className="py-2 pr-4">{s.publishedBy ? s.publishedBy.name : "-"}</td>
                     <td className="py-2">
                       <div className="flex flex-wrap gap-2">
