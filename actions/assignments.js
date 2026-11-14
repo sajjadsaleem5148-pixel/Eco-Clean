@@ -73,7 +73,7 @@ export async function assignCollectorAction(prevState, formData) {
         $set: { status: "ASSIGNED", assignedCollector: collector._id, assignedAt: new Date() },
         $push: { statusHistory: { status: "ASSIGNED", at: new Date(), by: user.id, note } },
       },
-      { new: true }
+      { returnDocument: "after" }
     ).select("reportId");
 
     if (!updated) {

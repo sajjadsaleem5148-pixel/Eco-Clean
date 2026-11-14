@@ -78,7 +78,7 @@ export async function updateComplaintStatusAction(prevState, formData) {
         $set: set,
         $push: { statusHistory: { status: decision, at: new Date(), by: user.id, note } },
       },
-      { new: true }
+      { returnDocument: "after" }
     ).select("_id ticketNumber");
 
     if (!updated) {
@@ -183,7 +183,7 @@ export async function assignComplaintAction(prevState, formData) {
           },
         },
       },
-      { new: true }
+      { returnDocument: "after" }
     ).select("_id");
 
     if (!updated) {

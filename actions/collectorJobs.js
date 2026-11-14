@@ -54,7 +54,7 @@ export async function updateJobAction(prevState, formData) {
           statusHistory: { status: step, at: new Date(), by: user.id, note: note || defaults[step] },
         },
       },
-      { new: true }
+      { returnDocument: "after" }
     ).select("reportId");
 
     if (!updated) {

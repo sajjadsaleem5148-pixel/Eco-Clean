@@ -186,7 +186,7 @@ export async function reopenComplaintAction(prevState, formData) {
         $inc: { reopenCount: 1 },
         $push: { statusHistory: { status: "UNDER_REVIEW", at: new Date(), by: user.id, note: "Reopened by resident" } },
       },
-      { new: true }
+      { returnDocument: "after" }
     ).select("_id");
 
     if (!updated) {
