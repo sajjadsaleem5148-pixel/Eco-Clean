@@ -6,6 +6,7 @@ import connectDB from "@/lib/db/connect";
 import WasteReport from "@/models/WasteReport";
 import { getCurrentUser } from "@/lib/auth/session";
 import { writeAudit } from "@/lib/audit/log";
+import { notifyReportOwner } from "@/services/notifications";
 import { COLLECTOR_STEPS, COLLECTOR_FROM, NOTE_REQUIRED } from "@/lib/reportTransitions";
 
 const schema = z.object({
@@ -76,5 +77,26 @@ export async function updateJobAction(prevState, formData) {
   revalidatePath("/collector/jobs");
   revalidatePath("/collector/jobs/" + reportId);
   revalidatePath("/admin/reports/" + reportId);
+  const residentNotes = {
+    ON_THE_WAY: ["Collector is on the way", "A collector is on the way for report "],
+    ARRIVED: ["Collector arrived", "A collector arrived for report "],
+    COLLECTED: ["Your waste was collected", "Report "],
+    UNABLE_TO_COLLECT: ["Pickup could not be completed", "The pickup for report "],
+  };
+  if (residentNotes[step]) {
+    await notifyReportOwner(reportId, {
+      type: "REPORT",
+      title: residentNotes[step][0],
+      body:
+        residentNotes[step][1] +
+        reportId +
+        (step === "COLLECTED"
+          ? " was marked as collected."
+          : step === "UNABLE_TO_COLLECT"
+            ? " could not be completed. See the status history."
+            : "."),
+      link: "/dashboard/reports/" + reportId,
+    });
+  }
   return { success: "Job updated." };
 }

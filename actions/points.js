@@ -7,6 +7,7 @@ import PointsEarningRule from "@/models/PointsEarningRule";
 import WasteCategory from "@/models/WasteCategory";
 import { requireActionPermission } from "@/lib/auth/guards";
 import { writeAudit } from "@/lib/audit/log";
+import { notifyReportOwner } from "@/services/notifications";
 import { verifyCurrentPassword } from "@/lib/security/stepUp";
 import { awardReportPoints, adjustPoints, reverseTransaction, describePointsError } from "@/services/points";
 import { MAX_POINTS_PER_ENTRY } from "@/lib/points/labels";
@@ -63,6 +64,12 @@ export async function awardReportPointsAction(prevState, formData) {
   }
 
   refresh();
+  await notifyReportOwner(reportId, {
+    type: "POINTS",
+    title: "Green Points awarded",
+    body: "Points were added to your account for report " + reportId + ".",
+    link: "/dashboard/green-points",
+  });
   return { success: "Points awarded." };
 }
 

@@ -8,6 +8,7 @@ import WasteReport from "@/models/WasteReport";
 import WasteCategory from "@/models/WasteCategory";
 import ServiceZone from "@/models/ServiceZone";
 import { getCurrentUser } from "@/lib/auth/session";
+import { notifyRoleStaff } from "@/services/notifications";
 import { CLOSED_STATUSES } from "@/lib/reportStatus";
 
 const objectId = z.string().regex(/^[a-f\d]{24}$/i, "Please choose a valid option");
@@ -108,5 +109,12 @@ export async function createReportAction(prevState, formData) {
   }
 
   if (!reportId) return { error: "Something went wrong. Please try again." };
+  await notifyRoleStaff("reports.verify", {
+    type: "REPORT",
+    title: "New garbage report",
+    body: "Report " + reportId + " is waiting for review.",
+    link: "/admin/reports/" + reportId,
+    dedupeKey: "report-new:" + reportId,
+  });
   redirect("/dashboard/reports/" + reportId);
 }

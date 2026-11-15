@@ -8,6 +8,7 @@ import ComplaintMessage from "@/models/ComplaintMessage";
 import User from "@/models/User";
 import { requireActionPermission } from "@/lib/auth/guards";
 import { writeAudit } from "@/lib/audit/log";
+import { notifyComplaintOwner } from "@/services/notifications";
 import {
   STAFF_DECISIONS,
   STATUS_FROM,
@@ -109,6 +110,14 @@ export async function updateComplaintStatusAction(prevState, formData) {
   }
 
   refresh(ticketNumber);
+  if (decision === "RESOLVED" || decision === "REJECTED") {
+    await notifyComplaintOwner(ticketNumber, {
+      type: "COMPLAINT",
+      title: decision === "RESOLVED" ? "Your complaint was resolved" : "Your complaint was rejected",
+      body: "Complaint " + ticketNumber + " has a new update. Open it to read the details.",
+      link: "/dashboard/complaints/" + ticketNumber,
+    });
+  }
   return { success: "Complaint updated." };
 }
 

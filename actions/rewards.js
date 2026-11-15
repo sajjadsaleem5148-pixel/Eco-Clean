@@ -8,6 +8,7 @@ import RewardProduct from "@/models/RewardProduct";
 import { getCurrentUser } from "@/lib/auth/session";
 import { requireActionPermission } from "@/lib/auth/guards";
 import { writeAudit } from "@/lib/audit/log";
+import { notifyOrderOwner } from "@/services/notifications";
 import { hit, makeKey } from "@/lib/security/rateLimit";
 import {
   createProduct,
@@ -315,5 +316,11 @@ export async function updateOrderStatusAction(prevState, formData) {
 
   refreshAll();
   revalidatePath("/admin/orders/" + orderNumber);
+  await notifyOrderOwner(orderNumber, {
+    type: "ORDER",
+    title: "Your reward order was updated",
+    body: "Order " + orderNumber + " has a new status. Open your orders to see it.",
+    link: "/dashboard/orders",
+  });
   return { success: "Order updated." };
 }

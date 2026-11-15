@@ -6,6 +6,7 @@ import connectDB from "@/lib/db/connect";
 import WasteReport from "@/models/WasteReport";
 import { requireActionPermission } from "@/lib/auth/guards";
 import { writeAudit } from "@/lib/audit/log";
+import { notifyReportOwner } from "@/services/notifications";
 import { REVIEW_DECISIONS, REVIEW_FROM } from "@/lib/reportTransitions";
 
 const schema = z.object({
@@ -70,5 +71,15 @@ export async function reviewReportAction(prevState, formData) {
 
   revalidatePath("/admin/reports");
   revalidatePath("/admin/reports/" + reportId);
+  if (decision === "VERIFIED" || decision === "REJECTED") {
+    await notifyReportOwner(reportId, {
+      type: "REPORT",
+      title: decision === "VERIFIED" ? "Your report was verified" : "Your report was rejected",
+      body: decision === "VERIFIED"
+        ? "Staff verified report " + reportId + "."
+        : "Report " + reportId + " was rejected. The reason is in the status history.",
+      link: "/dashboard/reports/" + reportId,
+    });
+  }
   return { success: "Report updated." };
 }

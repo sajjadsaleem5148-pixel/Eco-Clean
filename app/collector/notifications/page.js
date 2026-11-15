@@ -1,7 +1,11 @@
-import PlaceholderPage from "@/components/ui/PlaceholderPage";
+import { requireRole } from "@/lib/auth/guards";
+import NotificationCenter from "@/components/dashboard/NotificationCenter";
 
 export const metadata = { title: "Notifications | ECO-CLEAN" };
+export const dynamic = "force-dynamic";
 
-export default function Page() {
-  return <PlaceholderPage title="Notifications" route="/collector/notifications" access="Collector only" />;
+export default async function CollectorNotificationsPage({ searchParams }) {
+  const user = await requireRole(["COLLECTOR"]);
+  const sp = await searchParams;
+  return <NotificationCenter userId={user.id} basePath="/collector/notifications" sp={sp} />;
 }

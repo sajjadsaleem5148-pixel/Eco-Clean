@@ -7,6 +7,7 @@ import WasteReport from "@/models/WasteReport";
 import User from "@/models/User";
 import { requireActionPermission } from "@/lib/auth/guards";
 import { writeAudit } from "@/lib/audit/log";
+import { notifyUser } from "@/services/notifications";
 import { ROLES } from "@/lib/permissions/roles";
 import { ASSIGNABLE_FROM } from "@/lib/reportTransitions";
 
@@ -95,5 +96,12 @@ export async function assignCollectorAction(prevState, formData) {
 
   revalidatePath("/admin/reports");
   revalidatePath("/admin/reports/" + reportId);
+  await notifyUser({
+    userId: collectorId,
+    type: "JOB",
+    title: "New job assigned",
+    body: "Job " + reportId + " was assigned to you.",
+    link: "/collector/jobs/" + reportId,
+  });
   return { success: "Collector assigned." };
 }

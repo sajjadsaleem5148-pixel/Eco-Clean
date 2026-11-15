@@ -11,6 +11,7 @@ import ServiceZone from "@/models/ServiceZone";
 import { getCurrentUser } from "@/lib/auth/session";
 import { hit, makeKey } from "@/lib/security/rateLimit";
 import { writeAudit } from "@/lib/audit/log";
+import { notifyRoleStaff } from "@/services/notifications";
 import {
   COMPLAINT_CATEGORIES,
   OPEN_STATUSES,
@@ -102,6 +103,13 @@ export async function createComplaintAction(prevState, formData) {
   }
 
   if (!ticket) return { error: "Something went wrong. Please try again." };
+  await notifyRoleStaff("complaints.resolve", {
+    type: "COMPLAINT",
+    title: "New complaint",
+    body: "Complaint " + ticket + " was submitted.",
+    link: "/admin/complaints/" + ticket,
+    dedupeKey: "complaint-new:" + ticket,
+  });
   redirect("/dashboard/complaints/" + ticket);
 }
 
