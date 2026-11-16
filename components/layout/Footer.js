@@ -1,8 +1,13 @@
 import Link from "next/link";
+import { getContactSettings } from "@/services/siteSettings";
+import { telHref } from "@/lib/siteSettings";
 
 const linkClass = "text-emerald-100 underline hover:text-white";
 
-export default function Footer() {
+export default async function Footer() {
+  const c = await getContactSettings();
+  const hasContact = Boolean(c.email || c.phone || c.address || c.hours || c.socials.length > 0);
+
   return (
     <footer className="mt-12 bg-emerald-950 text-emerald-50">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:grid-cols-3">
@@ -24,9 +29,30 @@ export default function Footer() {
         </nav>
         <div>
           <p className="text-sm font-semibold text-white">Contact</p>
-          <p className="mt-2 text-sm text-emerald-100">
-            Contact details and social links will appear here once an administrator configures them.
-          </p>
+          {!hasContact && (
+            <p className="mt-2 text-sm text-emerald-100">
+              Contact details and social links will appear here once an administrator configures them.
+            </p>
+          )}
+          {hasContact && (
+            <ul className="mt-2 space-y-1 text-sm text-emerald-100">
+              {c.email && (
+                <li><a href={"mailto:" + c.email} className={linkClass}>{c.email}</a></li>
+              )}
+              {c.phone && (
+                <li><a href={telHref(c.phone)} className={linkClass}>{c.phone}</a></li>
+              )}
+              {c.address && <li className="whitespace-pre-line">{c.address}</li>}
+              {c.hours && <li>{c.hours}</li>}
+              {c.socials.map((s) => (
+                <li key={s.label}>
+                  <a href={s.url} target="_blank" rel="noopener noreferrer" className={linkClass}>
+                    {s.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
       <div className="border-t border-emerald-900 px-4 py-4 text-center text-xs text-emerald-100">
