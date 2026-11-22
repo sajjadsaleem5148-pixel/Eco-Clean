@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import LogoutButton from "@/components/forms/LogoutButton";
+import NotificationBell from "@/components/layout/NotificationBell";
 import NavLinks from "@/components/layout/NavLinks";
 
 export default function PortalShell({ title, groups, children }) {
@@ -22,7 +23,10 @@ export default function PortalShell({ title, groups, children }) {
           <Link href="/" className="text-lg font-bold tracking-tight">ECO-CLEAN</Link>
           <span className="hidden text-sm text-emerald-100 sm:inline">{title}</span>
         </div>
-        <LogoutButton />
+        <div className="flex items-center gap-2">
+          <NotificationBell />
+          <LogoutButton />
+        </div>
       </header>
       <div className="mx-auto flex max-w-7xl">
         <aside className="hidden w-64 shrink-0 self-start border-r border-gray-200 bg-white p-3 md:sticky md:top-0 md:block md:max-h-screen md:overflow-y-auto">

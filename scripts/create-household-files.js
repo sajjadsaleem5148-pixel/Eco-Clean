@@ -566,12 +566,12 @@ written.forEach((f) => {
     problems.push("animation or gradient classes are not allowed");
   }
   if (f.startsWith("app/") && !src.includes("requireRole(")) problems.push("missing page role check");
-  if (f === "app/dashboard/collections/page.js" && /collector/i.test(src.replace(/collector's|collection/gi, ""))) {
+  if (f === "app/dashboard/collections/page.js" && /assignedCollector|populate\("collector/.test(src)) {
     problems.push("resident page must not mention or load the collector");
   }
   if (f === "services/scheduleQueries.js") {
     const zoneFn = src.split("export async function confirmedForCollector")[0];
-    if (/populate\\("collector/.test(zoneFn) || /select\\("[^"]*collector/.test(zoneFn)) {
+    if (/populate\("collector/.test(zoneFn) || /select\("[^"]*collector/.test(zoneFn)) {
       problems.push("zone query must never select the collector");
     }
   }

@@ -22,6 +22,7 @@ export default async function Footer() {
             <li><Link href="/waste-segregation" className={linkClass}>Waste Segregation</Link></li>
             <li><Link href="/rewards" className={linkClass}>Rewards</Link></li>
             <li><Link href="/complaints" className={linkClass}>Complaints</Link></li>
+            <li><Link href="/testimonials" className={linkClass}>Testimonials</Link></li>
             <li><Link href="/contact" className={linkClass}>Contact</Link></li>
             <li><Link href="/privacy" className={linkClass}>Privacy Policy</Link></li>
             <li><Link href="/terms" className={linkClass}>Terms</Link></li>

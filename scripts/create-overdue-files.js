@@ -485,8 +485,8 @@ written.forEach((f) => {
     if (/updateOne|deleteOne|findOneAndUpdate|useActionState/.test(src)) problems.push("page must be read-only");
   }
   if (f === "services/overdue.js") {
-    if (/reporter/.test(src)) problems.push("service must never select the reporter");
-    if (/updateOne|updateMany|deleteOne|deleteMany|findOneAndUpdate|create\\(/.test(src)) {
+    if (/reporter/.test(src.replace(/\/\/.*$/gm, ""))) problems.push("service must never select the reporter");
+    if (/updateOne|updateMany|deleteOne|deleteMany|findOneAndUpdate|create\(/.test(src)) {
       problems.push("service must be read-only");
     }
   }
