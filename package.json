@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:integration": "vitest run --config vitest.integration.config.mjs"
+    "test:integration": "vitest run --config vitest.integration.config.mjs",
+    "test:e2e": "node scripts/run-e2e.js",
+    "check:a11y": "node scripts/check-a11y.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

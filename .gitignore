@@ -40,3 +40,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 verify-report.txt
+test-results/
+playwright-report/
+blob-report/
+e2e-server.log
+a11y-report.txt
