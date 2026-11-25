@@ -1,7 +1,7 @@
-import PlaceholderPage from "@/components/ui/PlaceholderPage";
+import UnavailableNotice from "@/components/ui/UnavailableNotice";
 
-export const metadata = { title: "Service Locations | ECO-CLEAN" };
+export const metadata = { title: "Business Locations | ECO-CLEAN" };
 
 export default function Page() {
-  return <PlaceholderPage title="Service Locations" route="/business/locations" access="Business portal (optional)" />;
+  return <UnavailableNotice title="Business Locations" what="Business locations cannot be added yet." />;
 }

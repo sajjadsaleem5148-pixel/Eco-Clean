@@ -1,7 +1,7 @@
-import PlaceholderPage from "@/components/ui/PlaceholderPage";
+import UnavailableNotice from "@/components/ui/UnavailableNotice";
 
-export const metadata = { title: "Invoices (billing not enabled) | ECO-CLEAN" };
+export const metadata = { title: "Business Invoices | ECO-CLEAN" };
 
 export default function Page() {
-  return <PlaceholderPage title="Invoices (billing not enabled)" route="/business/invoices" access="Business portal (optional)" />;
+  return <UnavailableNotice title="Business Invoices" what="There is no invoicing, and no invoice or payment figures exist." />;
 }

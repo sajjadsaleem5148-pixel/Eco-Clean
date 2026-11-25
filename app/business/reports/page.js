@@ -1,7 +1,7 @@
-import PlaceholderPage from "@/components/ui/PlaceholderPage";
+import UnavailableNotice from "@/components/ui/UnavailableNotice";
 
-export const metadata = { title: "Reports | ECO-CLEAN" };
+export const metadata = { title: "Business Reports | ECO-CLEAN" };
 
 export default function Page() {
-  return <PlaceholderPage title="Reports" route="/business/reports" access="Business portal (optional)" />;
+  return <UnavailableNotice title="Business Reports" what="There are no business reports." />;
 }

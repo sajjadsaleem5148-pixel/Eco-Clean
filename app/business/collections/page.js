@@ -1,7 +1,7 @@
-import PlaceholderPage from "@/components/ui/PlaceholderPage";
+import UnavailableNotice from "@/components/ui/UnavailableNotice";
 
-export const metadata = { title: "Collections | ECO-CLEAN" };
+export const metadata = { title: "Business Collections | ECO-CLEAN" };
 
 export default function Page() {
-  return <PlaceholderPage title="Collections" route="/business/collections" access="Business portal (optional)" />;
+  return <UnavailableNotice title="Business Collections" what="Business collection records are not kept yet." />;
 }
