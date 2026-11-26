@@ -18,7 +18,7 @@ Built does not mean tested in a browser. Pages have not been checked in a real b
 | Choose a service zone, see confirmed schedules | Built | Weekly windows only |
 | Profile (name) | Partly | Only the name can be changed |
 | Notifications and bell | Built | In-app only |
-| Forgot or reset password | Not built | Needs an email provider |
+| Forgot or reset password | Not built | The pages say so plainly. Needs an email provider |
 
 ## Collectors
 
@@ -57,10 +57,10 @@ Built does not mean tested in a browser. Pages have not been checked in a real b
 | Forgot and reset password, email verification | Needs an email provider |
 | Email and SMS notifications | Needs a provider |
 | Operations map, location pin, GPS | Needs a map provider |
-| Multi-factor authentication for administrators | Not designed yet |
-| Business portal (`/business/*`, 6 pages) | The business role and workflow are not decided |
+| Multi-factor authentication for administrators | A one-time-code library exists (`lib/totp.js`, tested with the RFC values) but it is not connected to sign-in |
+| Business portal (`/business/*`, 6 pages) | The business role and workflow are not decided. The pages show a plain notice |
 | Recycling and composting outcome figures | No verified downstream records exist |
-| Browser end-to-end tests (Playwright) | Installed, none written |
+| Browser end-to-end tests (Playwright) | Written in `tests/e2e`, not run successfully yet |
 
 ## Known limits
 
@@ -71,3 +71,13 @@ Built does not mean tested in a browser. Pages have not been checked in a real b
   a check that is not backed by a database index. Where an index or a filtered update protects a rule, the
   tests cover it.
 - The missed-pickup list is an estimate from each zone's collection target, not a confirmed miss.
+
+## Added later
+
+| Feature | Status | Notes |
+|---|---|---|
+| Public Our Impact page (`/impact`) | Built | Live counts only. No recycling or composting figures |
+| Public Learn articles (`/learn`) and the content library | Built | Plain text, drafts are never public |
+| Honest status pages: forgot password, media, operations map | Built | They state that the feature is not available. No fake forms |
+| Accessibility code check (`node scripts/check-a11y.js`) | Built | Reads source files only. It cannot judge colour contrast or screen readers |
+| Test report and zip scripts (`scripts/make-release.js`) | Built | The report is made only from a passing full check |

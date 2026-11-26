@@ -10,6 +10,26 @@ beforeAll(connectTestDb);
 beforeEach(clearDb);
 afterAll(disconnectTestDb);
 
+// Fills every unique field of the model with a different value, so raw inserts cannot clash on null.
+function withUniques(Model, rows) {
+  const fields = new Set();
+  Model.schema.indexes().forEach(function (idx) {
+    if (idx[1] && idx[1].unique) Object.keys(idx[0]).forEach(function (k) { fields.add(k); });
+  });
+  Object.keys(Model.schema.paths).forEach(function (p) {
+    const o = Model.schema.paths[p].options;
+    if (o && o.unique) fields.add(p);
+  });
+  fields.delete('_id');
+  return rows.map(function (row, i) {
+    const copy = Object.assign({}, row);
+    fields.forEach(function (f) {
+      if (copy[f] === undefined) copy[f] = 'U-' + i + '-' + f;
+    });
+    return copy;
+  });
+}
+
 describe("getImpactFigures", () => {
   it("returns zeros on an empty database", async () => {
     expect(await getImpactFigures()).toEqual({
@@ -54,12 +74,12 @@ describe("getImpactFigures", () => {
       { orderNumber: "RO-1", status: "COMPLETED", user: user._id },
       { orderNumber: "RO-2", status: "PENDING", user: user._id },
     ]);
-    await GreenPointsTransaction.collection.insertMany([
-      { user: user._id, type: "EARN", points: 10 },
-      { user: user._id, type: "EARN", points: 15 },
-      { user: user._id, type: "REDEEM", points: -20 },
-      { user: user._id, type: "REFUND", points: 20 },
-    ]);
+    await GreenPointsTransaction.collection.insertMany(withUniques(GreenPointsTransaction, [
+      { transactionId: "T-1", idempotencyKey: "K-1", user: user._id, type: "EARN", points: 10 },
+      { transactionId: "T-2", idempotencyKey: "K-2", user: user._id, type: "EARN", points: 15 },
+      { transactionId: "T-3", idempotencyKey: "K-3", user: user._id, type: "REDEEM", points: -20 },
+      { transactionId: "T-4", idempotencyKey: "K-4", user: user._id, type: "REFUND", points: 20 },
+    ]));
 
     const f = await getImpactFigures();
     expect(f.ordersCompleted).toBe(1);

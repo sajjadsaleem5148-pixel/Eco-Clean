@@ -1,0 +1,125 @@
+import { describe, it, expect } from "vitest";
+import {
+  base32Encode,
+  base32Decode,
+  generateSecret,
+  hotp,
+  totp,
+  verifyTotp,
+  otpauthUri,
+  generateBackupCodes,
+  normalizeBackupCode,
+} from "@/lib/totp";
+
+const KEY = Buffer.from("12345678901234567890");
+const SECRET = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ";
+
+describe("base32", () => {
+  it("matches the known encoding of the RFC test key", () => {
+    expect(base32Encode(KEY)).toBe(SECRET);
+    expect(base32Decode(SECRET).toString()).toBe("12345678901234567890");
+  });
+
+  it("round-trips random bytes and ignores spaces, hyphens, case and padding", () => {
+    const bytes = Buffer.from([0, 1, 2, 250, 251, 252, 253, 7, 8]);
+    expect(base32Decode(base32Encode(bytes)).equals(bytes)).toBe(true);
+    expect(base32Decode("gezd gnbv-GY3TQOJQ====").toString()).toBe("123456789012");
+  });
+
+  it("refuses characters that are not base32", () => {
+    expect(() => base32Decode("ABC1")).toThrow();
+    expect(() => base32Decode("ab!c")).toThrow();
+  });
+});
+
+describe("HOTP (RFC 4226 test values)", () => {
+  it("gives the ten published codes", () => {
+    const expected = ["755224", "287082", "359152", "969429", "338314", "254676", "287922", "162583", "399871", "520489"];
+    expected.forEach((code, counter) => expect(hotp(KEY, counter)).toBe(code));
+  });
+});
+
+describe("TOTP (RFC 6238 test values, 8 digits)", () => {
+  it("gives the published codes for the SHA-1 secret", () => {
+    const cases = [
+      [59, "94287082"],
+      [1111111109, "07081804"],
+      [1111111111, "14050471"],
+      [1234567890, "89005924"],
+      [2000000000, "69279037"],
+      [20000000000, "65353130"],
+    ];
+    cases.forEach((c) => expect(totp(SECRET, c[0] * 1000, { digits: 8 })).toBe(c[1]));
+  });
+});
+
+describe("verifyTotp", () => {
+  const T = 1700000000000;
+  const secret = generateSecret();
+
+  it("accepts the current code and returns its counter", () => {
+    const code = totp(secret, T);
+    expect(verifyTotp(secret, code, T)).toBe(Math.floor(T / 30000));
+  });
+
+  it("accepts one step before and after, but not two", () => {
+    expect(verifyTotp(secret, totp(secret, T - 30000), T)).not.toBeNull();
+    expect(verifyTotp(secret, totp(secret, T + 30000), T)).not.toBeNull();
+    expect(verifyTotp(secret, totp(secret, T - 90000), T)).toBeNull();
+    expect(verifyTotp(secret, totp(secret, T + 90000), T)).toBeNull();
+  });
+
+  it("with a window of zero accepts only the current code", () => {
+    expect(verifyTotp(secret, totp(secret, T - 30000), T, 0)).toBeNull();
+    expect(verifyTotp(secret, totp(secret, T), T, 0)).not.toBeNull();
+  });
+
+  it("refuses a wrong code and anything that is not six digits", () => {
+    const code = totp(secret, T);
+    const wrong = code === "000000" ? "000001" : "000000";
+    expect(verifyTotp(secret, wrong, T)).toBeNull();
+    ["", "12345", "1234567", "abcdef", "12 345", null, undefined, 123456].forEach((bad) => {
+      expect(verifyTotp(secret, bad, T)).toBeNull();
+    });
+  });
+
+  it("refuses a bad or empty secret without throwing", () => {
+    expect(verifyTotp("not base32!", "123456", T)).toBeNull();
+    expect(verifyTotp("", "123456", T)).toBeNull();
+  });
+});
+
+describe("secrets and addresses", () => {
+  it("makes a 32 character base32 secret that is different every time", () => {
+    const a = generateSecret();
+    const b = generateSecret();
+    expect(a).toMatch(/^[A-Z2-7]{32}$/);
+    expect(a).not.toBe(b);
+  });
+
+  it("builds an address an authenticator app can read", () => {
+    const uri = otpauthUri({ issuer: "ECO-CLEAN", account: "admin@example.com", secret: SECRET });
+    expect(uri.indexOf("otpauth://totp/ECO-CLEAN%3Aadmin%40example.com?")).toBe(0);
+    expect(uri).toContain("secret=" + SECRET);
+    expect(uri).toContain("issuer=ECO-CLEAN");
+    expect(uri).toContain("digits=6");
+    expect(uri).toContain("period=30");
+  });
+});
+
+describe("recovery codes", () => {
+  it("makes eight different codes in the form XXXXX-XXXXX without confusing characters", () => {
+    const codes = generateBackupCodes();
+    expect(codes).toHaveLength(8);
+    expect(new Set(codes).size).toBe(8);
+    codes.forEach((c) => expect(c).toMatch(/^[A-HJ-NP-Z2-9]{5}-[A-HJ-NP-Z2-9]{5}$/));
+  });
+
+  it("normalises what a person types and refuses what cannot be a code", () => {
+    expect(normalizeBackupCode("abcde fghjk")).toBe("ABCDE-FGHJK");
+    expect(normalizeBackupCode("abcde-fghjk")).toBe("ABCDE-FGHJK");
+    ["", "short", "ABCDE-FGHJ0", "ABCDE-FGHJI", null, undefined].forEach((v) => {
+      expect(normalizeBackupCode(v)).toBe("");
+    });
+  });
+});

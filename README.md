@@ -21,7 +21,7 @@ The main gaps are photo upload, email (password reset), multi-factor authenticat
 - Auth.js (next-auth beta) with email and password, bcrypt hashing
 - zod for input validation
 - Vitest for unit and integration tests (integration tests use an in-memory MongoDB replica set)
-- Playwright is installed, but no browser tests are written yet
+- Playwright browser tests are written in `tests/e2e`, but have not been run successfully yet. They start MongoDB, the site and Chrome together, which is heavy for a computer with little memory
 
 ## Requirements
 
@@ -80,6 +80,7 @@ Do not run it on a live database.
 | `npm start` | Runs the production build |
 | `npm test` | Unit tests (rules, validation, helpers). No database needed |
 | `npm run test:integration` | Database tests against a local in-memory replica set. Never touches Atlas |
+| `npm run test:e2e` | Browser tests on a temporary local database (heavy: MongoDB, the site and Chrome run together) |
 | `node scripts/verify-all.js` | Checks files, wiring, tests and build, and prints a summary |
 | `node scripts/verify-all.js quick` | Same, without tests and build |
 | `node scripts/reset-user-password.js` | Lists accounts and resets one password |
@@ -112,7 +113,7 @@ and shown read-only at `/admin/roles`. A Super Admin cannot be created, suspende
 
 ## Tests
 
-At the last full run of `node scripts/verify-all.js`: 239 unit tests and 290 integration tests passed, and the
+At the last full run of `node scripts/verify-all.js`: the unit and integration tests passed (see `docs/TEST-REPORT.md` for the numbers once it exists), and the
 production build compiled. The numbers change as the project grows, so run the command yourself.
 
 What the tests do not cover: sign-in through Auth.js, how pages look in a browser, and any browser-level flow.

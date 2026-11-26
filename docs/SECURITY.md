@@ -26,7 +26,7 @@ security professional.
 
 ## Known limits
 
-- No multi-factor authentication yet.
+- No multi-factor authentication yet. A tested one-time-code library exists but it is not connected to sign-in.
 - No password reset by email yet.
 - Failed sign-in attempts are rate limited but not listed anywhere.
 - The audit log is append-only in the application only. Someone with direct database access can change it.
